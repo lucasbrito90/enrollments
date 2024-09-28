@@ -1,0 +1,51 @@
+@baseUrl=http://localhost:3000
+@id=e73e5f45-f4d1-4d26-831e-973b1b100f0b
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "name": "zoe",
+    "email": "z.oe@jhon.com",
+    "date_of_birth": "1990-01-01",
+    "phone_number": "1234567890",
+    "address": "1234 Main St",
+    "city": "Anytown",
+    "country": "USA",
+    "state_province": "NY",
+    "postal_code": "12345",
+    "language": "en",
+    "sector": "IT",
+    "role": "admin",
+    "avatar": "https://www.example.com/avatar.jpg",
+    "email_notifications": true,
+    "sms_notifications": true,
+    "web_notifications": true
+}
+
+###
+
+# @name getUsers
+GET {{baseUrl}}/users?limit=5&sortBy=name:ASC&search=ana
+###
+
+# @name getUser
+GET {{baseUrl}}/users/{{id}}
+
+###
+
+# @name updateUser
+PUT {{baseUrl}}/users/{{id}}
+Content-Type: application/json
+
+{
+    "sector": "IT",
+    "role": "admin"
+}
+
+###
+
+# @name deleteUser
+DELETE {{baseUrl}}/users/{{id}}
+
+###

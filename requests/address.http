@@ -1,0 +1,36 @@
+@baseUrl=http://localhost:3000
+@id=685b3681-8b6c-4695-bdda-dcb2a0aefff2
+# @name createAddressFromUser
+POST {{baseUrl}}/addresses/add-users-address
+Content-Type: application/json
+
+{
+    "street": "1234 Main St",
+    "number": 1234,
+    "city": "Anytown",
+    "country": "USA",
+    "state_province": "NY",
+    "postal_code": "12345",
+    "neighborhood": "Downtown",
+    "user_id": "{{id}}"
+
+}
+###
+
+# @name getUsersAddresses
+GET {{baseUrl}}/addresses/users-addresses/{{id}}
+
+###
+
+# @name removeAddressFromUser
+DELETE {{baseUrl}}/addresses/remove-users-address/6dc3f56d-275d-4288-804e-97e8a8b8f876
+
+###
+
+# @name updateAddress
+PATCH {{baseUrl}}/addresses/d90c3ffc-e836-45f6-80ee-bbcd08aa133c
+Content-Type: application/json
+
+{
+    "street": "Wellington St"
+}

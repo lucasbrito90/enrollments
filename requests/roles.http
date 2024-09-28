@@ -1,0 +1,9 @@
+@baseUrl=http://localhost:3000
+
+# @name createRole
+POST {{baseUrl}}/roles
+Content-Type: application/json
+
+{
+  "name": "admin"
+}
