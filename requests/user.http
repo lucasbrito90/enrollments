@@ -1,5 +1,5 @@
 @baseUrl=http://localhost:3000
-@id=e73e5f45-f4d1-4d26-831e-973b1b100f0b
+@id=fb54c3f9-49f6-40ab-b849-ae72bda0ba27
 # @name createUser
 POST {{baseUrl}}/users
 Content-Type: application/json
@@ -26,7 +26,7 @@ Content-Type: application/json
 ###
 
 # @name getUsers
-GET {{baseUrl}}/users?limit=5&sortBy=name:ASC&search=ana
+GET {{baseUrl}}/users?limit=5&sortBy=name:ASC&search=z
 ###
 
 # @name getUser
@@ -49,3 +49,15 @@ Content-Type: application/json
 DELETE {{baseUrl}}/users/{{id}}
 
 ###
+
+# @name updateUsersPermissions
+PUT {{baseUrl}}/users/{{id}}/permissions
+Content-Type: application/json
+
+{
+    "permissions": [ 
+        "create_user", 
+        "edit_user",
+        "delete_user"
+    ]
+}

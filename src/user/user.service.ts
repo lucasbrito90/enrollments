@@ -2,12 +2,14 @@ import {
   ConflictException,
   HttpException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
+import { PermissionService } from 'src/permission/permission.service';
 import { DeleteResult, QueryFailedError, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { updatePermissionsDto } from './dto/update-permissions.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -17,8 +19,8 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    // private readonly permissionsService: PermissionsService,
-  ) { }
+    private readonly permissionsService: PermissionService,
+  ) {}
 
   async create(user: CreateUserDto) {
     try {
@@ -87,5 +89,33 @@ export class UserService {
 
   async remove(id: string): Promise<DeleteResult> {
     return await this.userRepository.delete(id);
+  }
+
+  async updatePermissions(
+    id: string,
+    updatePermissionsDto: updatePermissionsDto,
+  ) {
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+      relations: ['permissions'],
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    try {
+      const permissions = await this.permissionsService.findAllByNames(
+        updatePermissionsDto.permissions,
+      );
+
+      user.permissions = permissions;
+
+      return await this.userRepository.save(user);
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        throw new ConflictException(error.message);
+      }
+
+      throw new HttpException(error.message, error.status);
+    }
   }
 }

@@ -6,11 +6,13 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { CreateUserDto } from './dto/create-user.dto';
+import { updatePermissionsDto } from './dto/update-permissions.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
@@ -44,5 +46,13 @@ export class UserController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     await this.userService.remove(id);
+  }
+
+  @Put(':id/permissions')
+  async updatePermissions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updatePermissionsDto: updatePermissionsDto,
+  ) {
+    return await this.userService.updatePermissions(id, updatePermissionsDto);
   }
 }
