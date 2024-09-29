@@ -61,3 +61,8 @@ Content-Type: application/json
         "delete_user"
     ]
 }
+
+###
+
+# @name getUsersMenu
+GET {{baseUrl}}/menu/{{id}}

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AddressModule } from 'src/address/address.module';
+import { MenuModule } from 'src/menu/menu.module';
 import { PermissionModule } from 'src/permission/permission.module';
 import { PhoneModule } from 'src/phone/phone.module';
 import { RoleModule } from 'src/role/role.module';
@@ -11,8 +13,14 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      cache: true,
+    }),
     TypeOrmModule.forRoot({
-      ...dataSourceOption,
+      type: process.env.DB_TYPE as 'postgres',
+      database: process.env.DB_DATABASE,
+      entities: dataSourceOption.entities,
+      migrations: dataSourceOption.migrations,
       autoLoadEntities: true,
     }),
     UserModule,
@@ -20,6 +28,7 @@ import { AppService } from './app.service';
     PhoneModule,
     PermissionModule,
     RoleModule,
+    MenuModule,
   ],
   controllers: [AppController],
   providers: [AppService],
