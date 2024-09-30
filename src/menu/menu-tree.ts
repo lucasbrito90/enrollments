@@ -121,7 +121,7 @@ const menu = [
       {
         title: 'Analytics',
         to: '/dashboard/analytics',
-        permission: 'edit user',
+        permission: 'create_user',
       },
     ],
   },

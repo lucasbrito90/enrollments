@@ -1,3 +1,4 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -5,11 +6,13 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
+import { Cache } from 'cache-manager';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { CreateUserDto } from './dto/create-user.dto';
 import { updatePermissionsDto } from './dto/update-permissions.dto';
@@ -18,7 +21,11 @@ import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   @Get()
   async findAll(@Paginate() query: PaginateQuery) {
@@ -53,6 +60,7 @@ export class UserController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePermissionsDto: updatePermissionsDto,
   ) {
+    await this.cacheManager.del('menu');
     return await this.userService.updatePermissions(id, updatePermissionsDto);
   }
 }

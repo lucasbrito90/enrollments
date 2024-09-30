@@ -26,8 +26,6 @@ export class MenuService {
     const permissions: string[] = Array.from(userPermissions);
 
     return this.filterByPermission(Menu, permissions);
-
-    return [];
   }
 
   private filterByPermission(
