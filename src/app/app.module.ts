@@ -1,6 +1,8 @@
+import { BullModule } from '@nestjs/bull';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
@@ -17,9 +19,19 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT),
+      },
+      defaultJobOptions: {
+        attempts: 3,
+      },
     }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'postgres',

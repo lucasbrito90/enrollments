@@ -1,3 +1,4 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
   ConflictException,
   HttpException,
@@ -5,7 +6,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Queue } from 'bull';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
+import {
+  ENROLLMENT_QUEUE,
+  USER_CREATED_JOB,
+} from 'src/common/events/constants.events';
 import { PermissionService } from 'src/permission/permission.service';
 import { DeleteResult, QueryFailedError, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,12 +25,19 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
+    @InjectQueue(ENROLLMENT_QUEUE)
+    private queue: Queue,
+
     private readonly permissionsService: PermissionService,
   ) {}
 
   async create(user: CreateUserDto) {
     try {
-      await this.userRepository.save(user);
+      const userCreated = await this.userRepository.save(user);
+
+      if (userCreated) {
+        this.queue.add(USER_CREATED_JOB, userCreated);
+      }
     } catch (error) {
       if (error instanceof QueryFailedError) {
         throw new ConflictException(error.message);

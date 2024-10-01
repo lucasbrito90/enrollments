@@ -5,8 +5,8 @@ POST {{baseUrl}}/users
 Content-Type: application/json
 
 {
-    "name": "zoe",
-    "email": "z.oe@jhon.com",
+    "name": "al.lu",
+    "email": "al.lu@jhon.com",
     "date_of_birth": "1990-01-01",
     "phone_number": "1234567890",
     "address": "1234 Main St",
