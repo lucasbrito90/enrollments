@@ -131,4 +131,16 @@ export class UserService {
       throw new HttpException(error.message, error.status);
     }
   }
+
+  async updateAvatar(id: string, avatar: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    user.avatar = avatar;
+
+    return await this.userRepository.save(user);
+  }
 }

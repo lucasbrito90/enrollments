@@ -5,8 +5,8 @@ POST {{baseUrl}}/users
 Content-Type: application/json
 
 {
-    "name": "al.lu",
-    "email": "al.lu@jhon.com",
+    "name": "alameida.luc",
+    "email": "xzy.luc@jhon.com",
     "date_of_birth": "1990-01-01",
     "phone_number": "1234567890",
     "address": "1234 Main St",
@@ -66,3 +66,17 @@ Content-Type: application/json
 
 # @name getUsersMenu
 GET {{baseUrl}}/menu/{{id}}
+
+###
+
+# @name updateUserAvatar
+PATCH  {{baseUrl}}/users/{{id}}/avatar
+Content-Type: multipart/form-data boundary=---BoundaryDelimiter
+
+---BoundaryDelimiter
+Content-Disposition: form-data; name="avatar"; filename="avatar.png"
+Content-Type: image/png
+
+< ./assets/avatar.png
+---BoundaryDelimiter--
+

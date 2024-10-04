@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AwsModule } from 'src/aws/aws.module';
 import { ENROLLMENT_QUEUE } from 'src/common/events/constants.events';
 import { UserCreatedListener } from 'src/mail/jobs/user-created.listener';
 import { MailModule } from 'src/mail/mail.module';
@@ -14,6 +15,7 @@ import { UserService } from './user.service';
     TypeOrmModule.forFeature([User]),
     PermissionModule,
     MailModule,
+    AwsModule,
     BullModule.registerQueue({
       name: ENROLLMENT_QUEUE,
     }),
