@@ -1,0 +1,33 @@
+@baseUrl=http://localhost:3000
+# @name createPermission
+POST {{baseUrl}}/permissions
+Content-Type: application/json
+
+[
+  { "name": "create_user" },
+  { "name": "edit_user" },
+  { "name": "delete_user" }
+]
+
+####
+
+# @name getPermissions
+GET {{baseUrl}}/permissions
+
+####
+
+# @name getPermission
+GET {{baseUrl}}/permissions/3de7fcb6-1258-4bf2-9a5a-d74e28525e6b
+
+####
+
+# @name updatePermission
+PATCH  {{baseUrl}}/permissions/3de7fcb6-1258-4bf2-9a5a-d74e28525e6b
+Content-Type: application/json
+
+{ "name": "create_post" }
+
+####
+
+# @name deletePermission
+DELETE {{baseUrl}}/permissions/20566c43-df99-4987-928a-311bee511182

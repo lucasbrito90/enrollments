@@ -1,13 +1,21 @@
+import { InjectQueue } from '@nestjs/bull';
 import {
   ConflictException,
   HttpException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Queue } from 'bull';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
+import {
+  ENROLLMENT_QUEUE,
+  USER_CREATED_JOB,
+} from 'src/common/events/constants.events';
+import { PermissionService } from 'src/permission/permission.service';
 import { DeleteResult, QueryFailedError, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { updatePermissionsDto } from './dto/update-permissions.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -17,12 +25,19 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    // private readonly permissionsService: PermissionsService,
-  ) { }
+    @InjectQueue(ENROLLMENT_QUEUE)
+    private queue: Queue,
+
+    private readonly permissionsService: PermissionService,
+  ) {}
 
   async create(user: CreateUserDto) {
     try {
-      await this.userRepository.save(user);
+      const userCreated = await this.userRepository.save(user);
+
+      if (userCreated) {
+        this.queue.add(USER_CREATED_JOB, userCreated);
+      }
     } catch (error) {
       if (error instanceof QueryFailedError) {
         throw new ConflictException(error.message);
@@ -87,5 +102,45 @@ export class UserService {
 
   async remove(id: string): Promise<DeleteResult> {
     return await this.userRepository.delete(id);
+  }
+
+  async updatePermissions(
+    id: string,
+    updatePermissionsDto: updatePermissionsDto,
+  ) {
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+      relations: ['permissions'],
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    try {
+      const permissions = await this.permissionsService.findAllByNames(
+        updatePermissionsDto.permissions,
+      );
+
+      user.permissions = permissions;
+
+      return await this.userRepository.save(user);
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        throw new ConflictException(error.message);
+      }
+
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async updateAvatar(id: string, avatar: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    user.avatar = avatar;
+
+    return await this.userRepository.save(user);
   }
 }
