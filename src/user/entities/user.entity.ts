@@ -1,13 +1,16 @@
 import { Address } from 'src/address/entities/address.entity';
+import { Permission } from 'src/permission/entities/permission.entity';
 import { Phone } from 'src/phone/entities/phone.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('users')
@@ -76,13 +79,15 @@ export class User {
   })
   phones?: Phone[];
 
-  // @ManyToMany(() => Role, (role) => role.users)
-  // @JoinTable()
-  // roles: Role[];
-
-  // @ManyToMany(() => Permission, (permission) => permission.users)
-  // @JoinTable()
-  // permissions: Permission[];
+  @ManyToMany(() => Permission, (permission) => permission.users, {
+    eager: true,
+  })
+  @JoinTable({
+    name: 'user_permissions',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: { name: 'permission_id' },
+  })
+  permissions: Permission[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt?: Date;

@@ -16,6 +16,7 @@ export class CreatePermissionTable1727320835449 implements MigrationInterface {
           {
             name: 'name',
             type: 'varchar',
+            isUnique: true,
           },
           {
             name: 'created_at',

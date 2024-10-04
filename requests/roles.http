@@ -5,5 +5,38 @@ POST {{baseUrl}}/roles
 Content-Type: application/json
 
 {
-  "name": "admin"
+  "name": "admin",
+  "permissions": [
+    "create_user",
+    "edit_user",
+    "delete_user"
+  ]
 }
+
+####
+
+# @name getRoles
+GET {{baseUrl}}/roles
+
+####
+
+# @name getRole
+GET {{baseUrl}}/roles/d698ade8-cf3d-4a0a-9904-4510ba268d4b
+
+####
+
+# @name updateRole
+PATCH {{baseUrl}}/roles/d698ade8-cf3d-4a0a-9904-4510ba268d4b
+Content-Type: application/json
+
+{
+  "name": "administrator",
+    "permissions": [
+    "create_user"
+  ]
+}
+
+####
+
+# @name deleteRole
+DELETE {{baseUrl}}/roles/31473aa6-3679-4e4e-abe4-b94da59068a7
