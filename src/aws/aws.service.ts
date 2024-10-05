@@ -32,7 +32,7 @@ export class AwsService {
 
     const command = new PutObjectCommand(params);
     await this.s3Client.send(command);
-    return key;
+    return `${process.env.AWS_ENDPOINT}/${bucket}/${key}`;
   }
 
   async getFile(bucket: string, key: string): Promise<Buffer> {
