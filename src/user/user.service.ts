@@ -8,8 +8,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bull';
 import { paginate, PaginateQuery } from 'nestjs-paginate';
+import { AwsService } from 'src/aws/aws.service';
 import {
   ENROLLMENT_QUEUE,
+  USER_AVATAR_UPDATED_JOB,
   USER_CREATED_JOB,
 } from 'src/common/events/constants.events';
 import { PermissionService } from 'src/permission/permission.service';
@@ -28,6 +30,7 @@ export class UserService {
     @InjectQueue(ENROLLMENT_QUEUE)
     private queue: Queue,
 
+    private readonly awsService: AwsService,
     private readonly permissionsService: PermissionService,
   ) {}
 
@@ -132,15 +135,19 @@ export class UserService {
     }
   }
 
-  async updateAvatar(id: string, avatar: string) {
+  async updateAvatar(id: string, buffer: Buffer, mimetype: string) {
     const user = await this.userRepository.findOne({
       where: { id: id },
     });
 
     if (!user) throw new NotFoundException('User not found');
 
-    user.avatar = avatar;
-
-    return await this.userRepository.save(user);
+    this.queue.add(USER_AVATAR_UPDATED_JOB, {
+      user: user,
+      avatar: {
+        buffer: buffer,
+        mimetype: mimetype, // Adiciona o tipo do arquivo (ex: image/jpeg)
+      },
+    });
   }
 }

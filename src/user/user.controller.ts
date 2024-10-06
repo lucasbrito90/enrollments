@@ -20,7 +20,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Cache } from 'cache-manager';
-import { randomUUID } from 'crypto';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { AwsService } from 'src/aws/aws.service';
 import { isAnImage } from 'src/common/utils/images/compressor-image';
@@ -89,14 +88,7 @@ export class UserController {
     if (!(await isAnImage(avatar.buffer))) {
       throw new BadRequestException('Invalid file type.');
     }
-
-    const fileKey = `${randomUUID()}-${Date.now()}`;
-    const bucket = 'avatars';
-
-    await this.awsService.createBucket(bucket);
-    await this.awsService.uploadFile(avatar, bucket, fileKey);
-
-    return await this.userService.updateAvatar(id, fileKey);
+    await this.userService.updateAvatar(id, avatar.buffer, avatar.mimetype);
   }
 
   @Get(':id/avatar')
