@@ -29,7 +29,7 @@ export class UserCreatedListener {
   async userAvatarUpdated(
     job: Job<{
       user: UpdateUserDto;
-      avatar: Express.Multer.File;
+      avatar: { buffer: Buffer; mimetype: string };
     }>,
   ) {
     const { user, avatar } = job.data;
@@ -37,7 +37,19 @@ export class UserCreatedListener {
     const bucket = 'avatars';
 
     await this.awsService.createBucket(bucket);
-    const url = await this.awsService.uploadFile(avatar, bucket, fileKey);
+
+    const buffer = Buffer.from(avatar.buffer);
+
+    if (!(buffer instanceof Buffer)) {
+      throw new Error('Invalid avatar buffer format');
+    }
+
+    const url = await this.awsService.uploadFile(
+      buffer,
+      bucket,
+      fileKey,
+      avatar.mimetype,
+    );
 
     user.avatar = url;
     await this.userService.update(user.id, user);

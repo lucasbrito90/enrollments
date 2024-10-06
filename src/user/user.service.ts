@@ -135,7 +135,7 @@ export class UserService {
     }
   }
 
-  async updateAvatar(id: string, avatar: Express.Multer.File) {
+  async updateAvatar(id: string, buffer: Buffer, mimetype: string) {
     const user = await this.userRepository.findOne({
       where: { id: id },
     });
@@ -144,7 +144,10 @@ export class UserService {
 
     this.queue.add(USER_AVATAR_UPDATED_JOB, {
       user: user,
-      avatar: avatar,
+      avatar: {
+        buffer: buffer,
+        mimetype: mimetype, // Adiciona o tipo do arquivo (ex: image/jpeg)
+      },
     });
   }
 }

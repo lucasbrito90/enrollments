@@ -88,8 +88,7 @@ export class UserController {
     if (!(await isAnImage(avatar.buffer))) {
       throw new BadRequestException('Invalid file type.');
     }
-
-    await this.userService.updateAvatar(id, avatar);
+    await this.userService.updateAvatar(id, avatar.buffer, avatar.mimetype);
   }
 
   @Get(':id/avatar')

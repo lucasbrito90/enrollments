@@ -1,9 +1,9 @@
 import {
   CreateBucketCommand,
   GetObjectCommand,
-  PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Readable } from 'stream';
@@ -22,16 +22,30 @@ export class AwsService {
     },
   });
 
-  async uploadFile(file: Express.Multer.File, bucket: string, key: string) {
+  async uploadFile(
+    buffer: Buffer,
+    bucket: string,
+    key: string,
+    mimetype: string,
+  ) {
     const params = {
-      Bucket: bucket,
-      Key: key,
-      Body: file.buffer,
-      ContentType: file.mimetype,
+      client: this.s3Client,
+      params: {
+        Bucket: bucket,
+        Key: key,
+        Body: buffer,
+        ContentType: mimetype, // Define o tipo do arquivo
+      },
     };
 
-    const command = new PutObjectCommand(params);
-    await this.s3Client.send(command);
+    const upload = new Upload(params);
+
+    try {
+      await upload.done();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+
     return `${process.env.AWS_ENDPOINT}/${bucket}/${key}`;
   }
 
