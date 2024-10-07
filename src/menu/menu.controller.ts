@@ -1,6 +1,14 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Controller, Get, Inject, Param, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseUUIDPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { AuthGuard } from 'src/auth/auth-guard/auth/auth-guard.guard';
 import { MenuItem, MenuService } from './menu.service';
 
 @Controller('menu')
@@ -10,6 +18,7 @@ export class MenuController {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<MenuItem[]> {
     const value = await this.cacheManager.get<MenuItem[]>('menu');
